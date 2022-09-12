@@ -208,8 +208,8 @@ def thread_localization():
 
 
 if __name__ == '__main__':
-    MAP_VOXEL_SIZE = 0.4
-    SCAN_VOXEL_SIZE = 0.1
+    MAP_VOXEL_SIZE = 0.2
+    SCAN_VOXEL_SIZE = 0.05
 
     # Global localization frequency (HZ)
     FREQ_LOCALIZATION = 0.5
