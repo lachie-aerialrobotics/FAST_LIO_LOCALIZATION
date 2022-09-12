@@ -222,7 +222,7 @@ if __name__ == '__main__':
     FOV = 3.14
 
     # The farthest distance(meters) within FOV
-    FOV_FAR = 150
+    FOV_FAR = 50
 
     rospy.init_node('fast_lio_localization')
     rospy.loginfo('Localization Node Inited...')

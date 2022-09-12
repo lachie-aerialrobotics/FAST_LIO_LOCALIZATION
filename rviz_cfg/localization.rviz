@@ -367,6 +367,59 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: false
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        base_link:
+          Value: true
+        base_link_frd:
+          Value: true
+        body:
+          Value: true
+        camera_init:
+          Value: true
+        map:
+          Value: true
+        map_ned:
+          Value: true
+        odom:
+          Value: true
+        odom_ned:
+          Value: true
+        os_imu:
+          Value: true
+        os_lidar:
+          Value: true
+        os_sensor:
+          Value: true
+        vision_estimate:
+          Value: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        map:
+          camera_init:
+            body:
+              base_link:
+                base_link_frd:
+                  {}
+              os_sensor:
+                os_imu:
+                  {}
+                os_lidar:
+                  {}
+              vision_estimate:
+                {}
+          map_ned:
+            {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -395,7 +448,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 57.27994918823242
+      Distance: 41.85725784301758
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -403,17 +456,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 8.843969345092773
-        Y: -11.749930381774902
-        Z: -8.345915794372559
+        X: 4.461219787597656
+        Y: -10.292638778686523
+        Z: -12.473605155944824
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9347968697547913
+      Pitch: 0.779796838760376
       Target Frame: body
-      Yaw: 2.4935874938964844
+      Yaw: 2.3335845470428467
     Saved: ~
 Window Geometry:
   Displays:
@@ -431,5 +484,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 2497
-  X: 63
-  Y: 54
+  X: 764
+  Y: 76

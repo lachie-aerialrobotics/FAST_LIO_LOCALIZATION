@@ -19,6 +19,6 @@ mapping:
     extrinsic_R: [0.999147,  0.019041, -0.036644, -0.017418,  0.998875,  0.044113, 0.037443, -0.043437,  0.998354]
 
 publish:     
-    scan_publish_en:  1       # 'false' will close all the point cloud output
-    dense_publish_en: 1       # false will low down the points number in a global-frame point clouds scan.
-    scan_bodyframe_pub_en: 1  # output the point cloud scans in IMU-body-frame
+    scan_publish_en:  0       # 'false' will close all the point cloud output
+    dense_publish_en: 0       # false will low down the points number in a global-frame point clouds scan.
+    scan_bodyframe_pub_en: 0  # output the point cloud scans in IMU-body-frame
