@@ -40,7 +40,7 @@ def msg_to_array(pc_msg):
 
 
 def registration_at_scale(pc_scan, pc_map, initial, scale):
-    result_icp = o3d.registration.registration_icp(
+    result_icp = o3d.pipelines.registration.registration_icp(
         voxel_down_sample(pc_scan, SCAN_VOXEL_SIZE * scale), voxel_down_sample(pc_map, MAP_VOXEL_SIZE * scale),
         1.0 * scale, initial,
         o3d.registration.TransformationEstimationPointToPoint(),
