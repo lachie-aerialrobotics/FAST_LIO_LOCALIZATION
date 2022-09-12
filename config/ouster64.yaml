@@ -1,12 +1,12 @@
 common:
     lid_topic:  "/os_cloud_node/points"
-    imu_topic:  "/os_cloud_node/imu"
+    imu_topic:  "/mavros/imu/data_raw"
     time_sync_en: false         # ONLY turn on when external time synchronization is really not possible
     
 preprocess:
     lidar_type: 3                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
     scan_line: 64
-    blind: 4
+    blind: 0.7
 
 mapping:
     acc_cov: 0.1
@@ -15,10 +15,8 @@ mapping:
     b_gyr_cov: 0.0001
     fov_degree:    180
     det_range:     150.0
-    extrinsic_T: [ 0.0, 0.0, -0.036]
-    extrinsic_R: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
+    extrinsic_T: [ 0.111284, -0.123266, 0.038224 ]
+    extrinsic_R: [0.999147,  0.019041, -0.036644, -0.017418,  0.998875,  0.044113, 0.037443, -0.043437,  0.998354]
 
 publish:     
     scan_publish_en:  1       # 'false' will close all the point cloud output
