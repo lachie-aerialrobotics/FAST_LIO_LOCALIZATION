@@ -3,7 +3,7 @@
 from __future__ import print_function, division, absolute_import
 
 import copy
-import threading
+import _thread
 import time
 
 import open3d as o3d
@@ -255,6 +255,6 @@ if __name__ == '__main__':
     rospy.loginfo('Initialize successfully!!!!!!')
     rospy.loginfo('')
     # 开始定期全局定位
-    thread.start_new_thread(thread_localization, ())
+    _thread.start_new_thread(thread_localization, ())
 
     rospy.spin()

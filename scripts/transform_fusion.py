@@ -3,7 +3,7 @@
 from __future__ import print_function, division, absolute_import
 
 import copy
-import threading
+import _thread
 import time
 
 import numpy as np
@@ -83,6 +83,6 @@ if __name__ == '__main__':
     pub_localization = rospy.Publisher('/localization', Odometry, queue_size=1)
 
     # 发布定位消息
-    thread.start_new_thread(transform_fusion, ())
+    _thread.start_new_thread(transform_fusion, ())
 
     rospy.spin()
