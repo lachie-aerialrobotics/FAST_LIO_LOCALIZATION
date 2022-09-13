@@ -44,7 +44,7 @@ def registration_at_scale(pc_scan, pc_map, initial, scale):
         voxel_down_sample(pc_scan, SCAN_VOXEL_SIZE * scale), voxel_down_sample(pc_map, MAP_VOXEL_SIZE * scale),
         1.0 * scale, initial,
         o3d.pipelines.registration.TransformationEstimationPointToPoint(),
-        o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=50)
+        o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=40)
     )
 
     return result_icp.transformation, result_icp.fitness
@@ -108,7 +108,7 @@ def crop_global_map_in_FOV(global_map, pose_estimation, cur_odom):
     # 发布fov内点云
     header = cur_odom.header
     header.frame_id = 'map'
-    publish_point_cloud(pub_submap, header, np.array(global_map_in_FOV.points)[::10])
+    publish_point_cloud(pub_submap, header, np.array(global_map_in_FOV.points))
 
     return global_map_in_FOV
 
@@ -208,21 +208,21 @@ def thread_localization():
 
 
 if __name__ == '__main__':
-    MAP_VOXEL_SIZE = 0.2
-    SCAN_VOXEL_SIZE = 0.05
+    MAP_VOXEL_SIZE = 0.4
+    SCAN_VOXEL_SIZE = 0.1
 
     # Global localization frequency (HZ)
     FREQ_LOCALIZATION = 0.5
 
     # The threshold of global localization,
     # only those scan2map-matching with higher fitness than LOCALIZATION_TH will be taken
-    LOCALIZATION_TH = 0.92
+    LOCALIZATION_TH = 0.97
 
     # FOV(rad), modify this according to your LiDAR type
-    FOV = 3.141
+    FOV = 3.14159265359 * 2
 
     # The farthest distance(meters) within FOV
-    FOV_FAR = 50
+    FOV_FAR = 1000
 
     rospy.init_node('fast_lio_localization')
     rospy.loginfo('Localization Node Inited...')
