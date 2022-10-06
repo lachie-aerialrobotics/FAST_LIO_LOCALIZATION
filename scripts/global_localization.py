@@ -208,21 +208,22 @@ def thread_localization():
 
 
 if __name__ == '__main__':
-    MAP_VOXEL_SIZE = 0.4
-    SCAN_VOXEL_SIZE = 0.1
+    MAP_VOXEL_SIZE = rospy.get_param('/relocalize/map_voxel_size')
+    SCAN_VOXEL_SIZE = rospy.get_param('/relocalize/scan_voxel_size')
 
     # Global localization frequency (HZ)
-    FREQ_LOCALIZATION = 0.5
+    FREQ_LOCALIZATION = rospy.get_param('/relocalize/freq')
 
     # The threshold of global localization,
     # only those scan2map-matching with higher fitness than LOCALIZATION_TH will be taken
-    LOCALIZATION_TH = 0.97
+    LOCALIZATION_TH = rospy.get_param('/relocalize/localization_threshold')
 
     # FOV(rad), modify this according to your LiDAR type
-    FOV = 3.14159265359 * 2
+    # FOV = 3.14159265359 * 2
+    FOV = rospy.get_param('/relocalize/FOV')
 
     # The farthest distance(meters) within FOV
-    FOV_FAR = 1000
+    FOV_FAR = rospy.get_param('/relocalize/FOV_max')
 
     rospy.init_node('fast_lio_localization')
     rospy.loginfo('Localization Node Inited...')
