@@ -9,8 +9,9 @@ import time
 import open3d as o3d
 import rospy
 import ros_numpy
-from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, Point, Quaternion
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, Point, Quaternion, PoseWithCovariance
 from nav_msgs.msg import Odometry
+from std_msgs.msg import Header
 from sensor_msgs.msg import PointCloud2
 import numpy as np
 import tf
@@ -44,7 +45,7 @@ def registration_at_scale(pc_scan, pc_map, initial, scale):
         voxel_down_sample(pc_scan, SCAN_VOXEL_SIZE * scale), voxel_down_sample(pc_map, MAP_VOXEL_SIZE * scale),
         1.0 * scale, initial,
         o3d.pipelines.registration.TransformationEstimationPointToPoint(),
-        o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=40)
+        o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=ITERATIONS)
     )
 
     return result_icp.transformation, result_icp.fitness
@@ -107,7 +108,7 @@ def crop_global_map_in_FOV(global_map, pose_estimation, cur_odom):
 
     # 发布fov内点云
     header = cur_odom.header
-    header.frame_id = 'map'
+    header.frame_id = MAP_FRAME
     publish_point_cloud(pub_submap, header, np.array(global_map_in_FOV.points))
 
     return global_map_in_FOV
@@ -147,7 +148,7 @@ def global_localization(pose_estimation):
         quat = tf.transformations.quaternion_from_matrix(T_map_to_odom)
         map_to_odom.pose.pose = Pose(Point(*xyz), Quaternion(*quat))
         map_to_odom.header.stamp = cur_odom.header.stamp
-        map_to_odom.header.frame_id = 'map'
+        map_to_odom.header.frame_id = MAP_FRAME
         pub_map_to_odom.publish(map_to_odom)
         return True
     else:
@@ -183,15 +184,16 @@ def cb_save_cur_odom(odom_msg):
 def cb_save_cur_scan(pc_msg):
     global cur_scan
     # 注意这里fastlio直接将scan转到odom系下了 不是lidar局部系
-    pc_msg.header.frame_id = 'camera_init'
+    pc_msg.header.frame_id = ODOM_FRAME
     pc_msg.header.stamp = rospy.Time().now()
     pub_pc_in_map.publish(pc_msg)
 
     # 转换为pcd
     # fastlio给的field有问题 处理一下
-    pc_msg.fields = [pc_msg.fields[0], pc_msg.fields[1], pc_msg.fields[2],
-                     pc_msg.fields[4], pc_msg.fields[5], pc_msg.fields[6],
-                     pc_msg.fields[3], pc_msg.fields[7]]
+    # pc_msg.fields = [pc_msg.fields[0], pc_msg.fields[1], pc_msg.fields[2],
+    #                  pc_msg.fields[4], pc_msg.fields[5], pc_msg.fields[6],
+    #                  pc_msg.fields[3], pc_msg.fields[7]]
+    pc_msg.fields = [pc_msg.fields[0], pc_msg.fields[1], pc_msg.fields[2], pc_msg.fields[3]]
     pc = msg_to_array(pc_msg)
 
     cur_scan = o3d.geometry.PointCloud()
@@ -225,6 +227,13 @@ if __name__ == '__main__':
     # The farthest distance(meters) within FOV
     FOV_FAR = rospy.get_param('/relocalize/FOV_max')
 
+    # max ICP iterations
+    ITERATIONS = rospy.get_param('/relocalize/max_iterations')
+
+    #frame names
+    MAP_FRAME = rospy.get_param('/relocalize/map_frame_id')
+    ODOM_FRAME = rospy.get_param('/relocalize/odom_frame_id')
+
     rospy.init_node('fast_lio_localization')
     rospy.loginfo('Localization Node Inited...')
 
@@ -233,19 +242,21 @@ if __name__ == '__main__':
     pub_submap = rospy.Publisher('/submap', PointCloud2, queue_size=1)
     pub_map_to_odom = rospy.Publisher('/map_to_odom', Odometry, queue_size=1)
 
-    rospy.Subscriber('/cloud_registered', PointCloud2, cb_save_cur_scan, queue_size=1)
-    rospy.Subscriber('/Odometry', Odometry, cb_save_cur_odom, queue_size=1)
+    rospy.Subscriber('/aft_pgo_map', PointCloud2, cb_save_cur_scan, queue_size=1)
+    rospy.Subscriber('/aft_pgo_odom', Odometry, cb_save_cur_odom, queue_size=1)
 
     # 初始化全局地图
     rospy.logwarn('Waiting for global map......')
-    initialize_global_map(rospy.wait_for_message('/map', PointCloud2))
+    initialize_global_map(rospy.wait_for_message('/map_init', PointCloud2))
 
     # 初始化
     while not initialized:
         rospy.logwarn('Waiting for initial pose....')
 
         # 等待初始位姿
-        pose_msg = rospy.wait_for_message('/initialpose', PoseWithCovarianceStamped)
+        header = Header(stamp=rospy.Time.now(), frame_id=ODOM_FRAME)
+        pose = Pose(position=Point(0,0,0), orientation=Quaternion(0,0,0,1))
+        pose_msg = PoseWithCovarianceStamped(header=header, pose=PoseWithCovariance(pose=pose))
         initial_pose = pose_to_mat(pose_msg)
         if cur_scan:
             initialized = global_localization(initial_pose)

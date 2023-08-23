@@ -41,7 +41,7 @@ def transform_fusion():
         br.sendTransform(tf.transformations.translation_from_matrix(T_map_to_odom),
                          tf.transformations.quaternion_from_matrix(T_map_to_odom),
                          rospy.Time.now(),
-                         'camera_init', 'map')
+                         ODOM_FRAME, MAP_FRAME)
         if cur_odom is not None:
             # 发布全局定位的odometry
             localization = Odometry()
@@ -54,8 +54,8 @@ def transform_fusion():
             localization.twist = cur_odom.twist
 
             localization.header.stamp = cur_odom.header.stamp
-            localization.header.frame_id = 'map'
-            localization.child_frame_id = 'body'
+            localization.header.frame_id = MAP_FRAME
+            localization.child_frame_id = 'aft_pgo'
             # rospy.loginfo_throttle(1, '{}'.format(np.matmul(T_map_to_odom, T_odom_to_base_link)))
             pub_localization.publish(localization)
 
@@ -72,12 +72,15 @@ def cb_save_map_to_odom(odom_msg):
 
 if __name__ == '__main__':
     # tf and localization publishing frequency (HZ)
-    FREQ_PUB_LOCALIZATION = 50
+    FREQ_PUB_LOCALIZATION = 10
+
+    MAP_FRAME = rospy.get_param('/relocalize/map_frame_id')
+    ODOM_FRAME = rospy.get_param('/relocalize/odom_frame_id')
 
     rospy.init_node('transform_fusion')
     rospy.loginfo('Transform Fusion Node Inited...')
 
-    rospy.Subscriber('/Odometry', Odometry, cb_save_cur_odom, queue_size=1)
+    rospy.Subscriber('/aft_pgo_odom', Odometry, cb_save_cur_odom, queue_size=1)
     rospy.Subscriber('/map_to_odom', Odometry, cb_save_map_to_odom, queue_size=1)
 
     pub_localization = rospy.Publisher('/localization', Odometry, queue_size=1)
