@@ -242,6 +242,9 @@ if __name__ == '__main__':
     pub_submap = rospy.Publisher('/submap', PointCloud2, queue_size=1)
     pub_map_to_odom = rospy.Publisher('/map_to_odom', Odometry, queue_size=1)
 
+    rospy.wait_for_message('/aft_pgo_odom', Odometry)
+    rospy.wait_for_message('/aft_pgo_map', PointCloud2)
+
     rospy.Subscriber('/aft_pgo_map', PointCloud2, cb_save_cur_scan, queue_size=1)
     rospy.Subscriber('/aft_pgo_odom', Odometry, cb_save_cur_odom, queue_size=1)
 
