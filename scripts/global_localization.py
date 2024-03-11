@@ -245,7 +245,7 @@ if __name__ == '__main__':
     rospy.wait_for_message('/aft_pgo_odom', Odometry)
     rospy.wait_for_message('/aft_pgo_map', PointCloud2)
 
-    rospy.Subscriber('/cloud_registered', PointCloud2, cb_save_cur_scan, queue_size=1)
+    rospy.Subscriber('/aft_pgo_map', PointCloud2, cb_save_cur_scan, queue_size=1)
     rospy.Subscriber('/aft_pgo_odom', Odometry, cb_save_cur_odom, queue_size=1)
 
     # 初始化全局地图
